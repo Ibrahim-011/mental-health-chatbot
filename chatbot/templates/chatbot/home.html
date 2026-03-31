@@ -1,0 +1,195 @@
+{% load static %}
+<html lang="en">
+  <!DOCTYPE html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Chatbot</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Health AI ChatBot</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            width: 80%;
+            max-width: 1200px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .column {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .column-1 {
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .column-2 {
+            background-color: #f9f9f9;
+        }
+
+        /* Styles for the AI Bot chat interface */
+        .chatbox-container {
+            border: 2px solid orange;
+            border-radius: 10px;
+            background-color: lightgray;
+        }
+
+        .chatbox {
+            border: 2px solid orange;
+            border-radius: 10px;
+            padding: 10px;
+            background-color: white;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .user-input {
+            width: 100%;
+            
+            margin-top: 10px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            border: 1px solid lightgray;
+            border-radius: 5px;
+        }
+
+        .user-input-button {
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: orange;
+            color: white;
+            font-family: 'Courier New', monospace;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .clear-chat-button {
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: red;
+            color: white;
+            font-family: 'Courier New', monospace;
+            border: none;
+            border-radius: 5px;
+        }
+
+        #loading-indicator {
+            text-align: center;
+            display: none;
+        }
+
+        /* Styles for the image */
+        .image-container {
+            width: 500px;
+            height: 500px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+  <div class="container">
+      <div class="column column-1">
+          <div class="image-container">
+              <img src="{% static 'img/imageframe.png' %}" alt="AI Bot">  
+
+            <div class="image1-container">
+
+              <img src="{% static 'img/bot.png' %}" alt="AI Bot">
+
+          </div> 
+          </div>
+      </div>
+      <div class="column column-2">
+          <div class="chatbox-container">
+              <h1 style="text-align: center;">Mental Health AI Bot</h1>
+              <div class="chatbox" id="chatbox"> Welcome to AI Bot! <br> <br> </div>
+              <input type="text" id="user_message" placeholder="Type your message here..." class="user-input">
+              <button onclick="sendMessage()" class="user-input-button">Send</button>
+              <button onclick="clearChat()" class="clear-chat-button">Clear Chat</button>
+              <div id="loading-indicator">
+              
+              </div>
+          </div>
+      </div>
+  </div>
+ 
+
+
+    <script>
+        function displayMessage(message) {
+          const chatbox = document.getElementById('chatbox');
+          chatbox.innerHTML += `${message}<br><br>`;
+          chatbox.scrollTop = chatbox.scrollHeight;
+        }
+      
+        async function sendMessage() {
+          const userMessage = document.getElementById('user_message').value.trim();
+          if (!userMessage) {
+            return;
+          }
+      
+          displayMessage(`You: ${userMessage}`);
+          document.getElementById('user_message').value = '';
+      
+          const loadingIndicator = document.getElementById('loading-indicator');
+          loadingIndicator.style.display = 'block';
+      
+          try {
+            const response = await fetch(`/get_bot_response/?user_message=${encodeURIComponent(userMessage)}`);
+            if (!response.ok) {
+              throw new Error(`HTTP error: ${response.status}`);
+            }
+      
+            const data = await response.json();
+            const botResponse = data.bot_response;
+            displayMessage(`AI Bot: ${botResponse}`);
+          } catch (error) {
+            displayMessage('AI Bot: Oops! Something went wrong.');
+            console.error(error);
+          } finally {
+            loadingIndicator.style.display = 'none';
+          }
+        }
+      
+        function clearChat() {
+          document.getElementById('chatbox').innerHTML = '';
+        }
+      
+        document.getElementById('user_message').addEventListener('keyup', function(event) {
+          if (event.key === 'Enter') {
+            sendMessage();
+          }
+        });
+      </script>
+      
+</body>
+</html>
